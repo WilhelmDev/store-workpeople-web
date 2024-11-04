@@ -1,22 +1,19 @@
-import useFirebase from '@/hooks/useFirebase'
+import useInvoice from '@/hooks/useInvoice'
 import { Product } from '@/interfaces/product'
-import { Box, Card, CardContent, CardMedia, Chip, Stack, Switch, Typography } from '@mui/material'
-import { doc, updateDoc } from 'firebase/firestore'
+import { Box, Card, CardContent, CardMedia, Chip, Stack, Typography } from '@mui/material'
 
 type Props = {
   product: Product,
 }
 
 export default function ProductCard({ product }: Props) {
-  const { db } = useFirebase()
-
-  const changeState = async () => {
-    const ref = doc(db, 'products', product.id);
-    await updateDoc(ref, { active: !product.active });
-  };
-
+  const { getProduct, loading } = useInvoice()
+  const handleClick = () => {
+    if (loading) return
+    getProduct(product.id)
+  }
   return (
-    <Card>
+    <Card onClick={handleClick} >
       <Box sx={{ position: 'relative', paddingTop: '100%' }}>
         <CardMedia
           component="img"
@@ -39,12 +36,6 @@ export default function ProductCard({ product }: Props) {
         <Typography variant="body1">
           Precio: <span style={{fontWeight: 700}}>{product.price}$</span>
         </Typography>
-        <Stack direction='row' spacing={1}>
-          <Typography variant="body1">
-            Activo:
-          </Typography>
-          <Switch size='small' checked={product.active} onChange={changeState} inputProps={{ 'aria-label': 'controlled' }}/>
-        </Stack>
         <Stack direction="row" spacing={1}>
           <Chip label={product.category} size="small" color='info' style={{marginTop: '5px'}}/>
         </Stack>
