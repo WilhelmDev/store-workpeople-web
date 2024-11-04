@@ -36,7 +36,7 @@ export default function RootLayout({
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   return (
     <MainWrapper className="mainwrapper">
-      <ProtectedRoute>
+      {/* <ProtectedRoute> */}
         {/* ------------------------------------------- */}
         {/* Sidebar */}
         {/* ------------------------------------------- */}
@@ -71,7 +71,7 @@ export default function RootLayout({
             {/* ------------------------------------------- */}
           </Container>
         </PageWrapper>
-      </ProtectedRoute>
+      {/* </ProtectedRoute> */}
     </MainWrapper>
   );
 }
