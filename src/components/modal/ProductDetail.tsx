@@ -1,6 +1,6 @@
 import useInvoice from '@/hooks/useInvoice'
 import { Box, Button, Chip, CircularProgress, Dialog, DialogContent, DialogTitle, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
-import React from 'react'
+import { useState } from 'react'
 
 type Props = {
   // You can add props here if needed in the future
@@ -8,6 +8,7 @@ type Props = {
 
 export default function ProductDetail({}: Props) {
   const { selectedProduct, closeModal, showModalProduct, addProduct } = useInvoice()
+  const [ showSnackbar, setShowSnackbar] = useState(false)
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -21,7 +22,7 @@ export default function ProductDetail({}: Props) {
 
   const AddinvoiceBtn = () => {
     return (
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12} md={12}>
         <Button variant="contained" fullWidth color="primary" onClick={addToinvoice}>
           Añadir a factura
         </Button>
@@ -75,11 +76,12 @@ export default function ProductDetail({}: Props) {
                   </Typography>
                   <Chip label={selectedProduct.category} color="primary" sx={{ mt: 1 }} />
                 </Box>
-                {!isMobile && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                    ID del producto: {selectedProduct.id}
-                  </Typography>
-                )}
+                { !isMobile && (
+                  <Box>
+                    <AddinvoiceBtn/>
+                  </Box>
+                  )
+                }
               </Box>
             </Grid>
             {isMobile && (

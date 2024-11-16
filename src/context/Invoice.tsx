@@ -1,3 +1,4 @@
+import BaseSnackbar from "@/components/snackbar/Base";
 import useFirebase from "@/hooks/useFirebase";
 import { ContextInvoice } from "@/interfaces/invoice";
 import { Product } from "@/interfaces/product";
@@ -11,6 +12,8 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [selectedProduct, setSelectedProduct] = useState<null | Product>(null)
   const [showModalProduct, setShowModalProduct] = useState<boolean>(false)
   const [products, setProducts] = useState<Product[]>([])
+
+  const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
 
   const { db } = useFirebase()
 
@@ -47,6 +50,7 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const addProduct = useCallback((product: Product) => {
     setProducts(prevProducts => {
       //TODO: Check repeated products
+      setShowSnackbar(true);
       return [...prevProducts, product];
     });
   }, []);
@@ -83,6 +87,7 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   return (
     <InvoiceContext.Provider value={memoizedValues}>
       {children}
+      <BaseSnackbar isOpen={showSnackbar} handleClose={() => setShowSnackbar(false)} />
     </InvoiceContext.Provider>
   )
 }
