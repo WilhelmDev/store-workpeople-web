@@ -1,25 +1,31 @@
-import { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import useFirebase from '@/hooks/useFirebase';
 import routes from '@/utils/routes';
+import { getUserToken } from '@/services/localstorage.service';
 
 const ProtectedRoute: React.FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
-  const { app } = useFirebase()
-  const auth = getAuth(app);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
+    const checkAuth = () => {
+      const token = getUserToken();
+      if (!token) {
         router.push(routes.login);
+      } else {
+        setIsAuthenticated(true);
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, [auth, router]);
+    checkAuth();
+  }, [router]);
 
-  return <>{children}</>;
+  if (isAuthenticated === null) {
+    // Puedes mostrar un loader aquí mientras se verifica la autenticación
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated ? <>{children}</> : null;
 };
 
 export default ProtectedRoute;
