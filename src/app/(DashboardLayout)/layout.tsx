@@ -37,7 +37,7 @@ export default function RootLayout({
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   return (
     <MainWrapper className="mainwrapper">
-      {/* <ProtectedRoute> */}
+      <ProtectedRoute>
         <InvoiceProvider>
           {/* ------------------------------------------- */}
           {/* Sidebar */}
@@ -74,7 +74,7 @@ export default function RootLayout({
             </Container>
           </PageWrapper>
         </InvoiceProvider>
-      {/* </ProtectedRoute> */}
+      </ProtectedRoute>
     </MainWrapper>
   );
 }

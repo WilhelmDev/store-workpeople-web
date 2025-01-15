@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://api:8000/api
+    networks:
+      - store-frontend-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  store-frontend-network:
+    external: true
