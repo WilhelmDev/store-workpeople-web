@@ -18,6 +18,7 @@ import { AxiosError } from "axios";
 import { ResponseApi } from "@/interfaces/api";
 import { useRouter } from "next/navigation";
 import routes from "@/utils/routes";
+import { saveUserToken } from "@/services/localstorage.service";
 
 interface loginType {
   title?: string;
@@ -45,6 +46,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
     try {
       const userData = await login(email, password);
       manageSnackBar(true, "Sesión iniciada correctamente", "success");
+      saveUserToken(userData.token);
       setTimeout(() => {
         router.push(routes.products);
       }, 1000);
