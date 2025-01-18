@@ -54,20 +54,26 @@ const Menuitems = [
     href: routes.products,
   },
   {
+    id: uniqueId(),
+    title: "Nuevo producto",
+    icon: IconList,
+    href: routes.newProduct,
+  },
+  {
     navlabel: true,
-    subheader: "Extra",
+    subheader: "Categorias",
   },
   {
     id: uniqueId(),
-    title: "Icons",
+    title: "Todas las categorias",
     icon: IconMoodHappy,
-    href: "/icons",
+    href: routes.categories,
   },
   {
     id: uniqueId(),
-    title: "Sample Page",
+    title: "Nueva categoria",
     icon: IconAperture,
-    href: "/sample-page",
+    href: routes.newCategory,
   },
 ];
 
