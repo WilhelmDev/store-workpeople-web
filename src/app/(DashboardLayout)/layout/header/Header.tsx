@@ -1,16 +1,17 @@
 import React from 'react';
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import Link from 'next/link';
 // components
 import Profile from './Profile';
 import { IconBellRinging, IconMenu } from '@tabler/icons-react';
 
-interface ItemType {
-  toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
+interface HeaderProps {
+  toggleMobileSidebar: (event: React.MouseEvent<HTMLElement>) => void;
+  sx?: React.CSSProperties;
 }
 
-const Header = ({toggleMobileSidebar}: ItemType) => {
+const Header: React.FC<HeaderProps> = ({ toggleMobileSidebar, sx }) => {
 
   // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
   // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
@@ -31,7 +32,7 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
   }));
 
   return (
-    <AppBarStyled position="sticky" color="default">
+    <AppBarStyled position="sticky" color="default" style={sx}>
       <ToolbarStyled>
         <IconButton
           color="inherit"
@@ -72,8 +73,5 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
   );
 };
 
-Header.propTypes = {
-  sx: PropTypes.object,
-};
-
 export default Header;
+
