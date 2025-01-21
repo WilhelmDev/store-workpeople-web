@@ -1,8 +1,10 @@
 import { Avatar, Box, Button, CircularProgress, Grid, IconButton, MenuItem, TextField, Typography } from '@mui/material'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { IconPhotoUp } from '@tabler/icons-react';
 import { ProductPayload } from '@/interfaces/product';
+import { Category } from '@/interfaces/category';
+import { getCategories } from '@/services/category.service';
 
 type Props = {
   callbackProduct: (product: ProductPayload) => void;
@@ -17,18 +19,11 @@ export default function ProductForm({ callbackProduct, loading }: Props) {
 
   const [product, setProduct] = useState({
     name: '',
-    description: '',
     price: '',
-    category: '',
+    categoryId: '',
   });
 
-  const categories = [
-    'Electronics',
-    'Clothing',
-    'Books',
-    'Home & Garden',
-    'Toys',
-  ];
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,9 +37,9 @@ export default function ProductForm({ callbackProduct, loading }: Props) {
     e.preventDefault();
     const payload = {
       ...product,
+      categoryId: parseInt(product.categoryId),
       price: parseFloat(product.price),
       image: image || '',
-      active: false,
     }
     callbackProduct(payload);
   };
@@ -63,6 +58,17 @@ export default function ProductForm({ callbackProduct, loading }: Props) {
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const categories = await getCategories()
+        setCategories(categories);
+      } catch (error) {
+        console.error("Error getting categories: ", error);
+      }
+    })();
+  }, [])
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -128,19 +134,6 @@ export default function ProductForm({ callbackProduct, loading }: Props) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            required
-            fullWidth
-            id="description"
-            label="Descripción"
-            name="description"
-            multiline
-            rows={4}
-            value={product.description}
-            onChange={handleChange}
-          />
-        </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             required
@@ -163,13 +156,13 @@ export default function ProductForm({ callbackProduct, loading }: Props) {
             fullWidth
             id="category"
             label="Categoría"
-            name="category"
-            value={product.category}
+            name="categoryId"
+            value={product.categoryId}
             onChange={handleChange}
           >
             {categories.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
+              <MenuItem key={`cat-${option.id}`} value={option.id}>
+                {option.name}
               </MenuItem>
             ))}
           </TextField>
