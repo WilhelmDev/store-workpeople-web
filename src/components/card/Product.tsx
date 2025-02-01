@@ -37,13 +37,26 @@ export default function ProductCard({ product }: Props) {
     <Card onClick={handleClick} >
       <RenderImage images={product.images}/>
       <CardContent>
-        <Typography variant="h5">{product.name}</Typography>
+        <Typography 
+          variant="h5" 
+          sx={{
+            height: '3em',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            lineHeight: '1.5em',
+          }}
+        >
+          {product.name}
+        </Typography>
         <Typography variant="body1">{product.description}</Typography>
         <Typography variant="body1">
           Precio: <span style={{fontWeight: 700}}>{product.price}$</span>
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Chip label={product.category} size="small" color='info' style={{marginTop: '5px'}}/>
+          <Chip label={product.category.name} size="small" color='info' style={{marginTop: '5px'}}/>
         </Stack>
       </CardContent>
     </Card>

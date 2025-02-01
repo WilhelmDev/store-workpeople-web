@@ -1,3 +1,5 @@
+import { Category } from "../category";
+
 export interface ProductPayload {
   name: string;
   price: number;
@@ -11,7 +13,7 @@ export interface Product {
   description: string;
   price: number;
   images: ProductImage[];
-  category: string;
+  category: Category;
   active: boolean
 }
 
