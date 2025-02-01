@@ -10,7 +10,13 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  image: string;
+  images: ProductImage[];
   category: string;
   active: boolean
+}
+
+export interface ProductImage {
+  id: number;
+  url: string;
+  productId: number;
 }
