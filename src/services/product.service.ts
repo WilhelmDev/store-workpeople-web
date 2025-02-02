@@ -23,3 +23,12 @@ export const getProducts = async () => {
     throw error;
   }
 }
+
+export const getProductById = async (productId: string) => {
+  try {
+    const { data } = await baseApi.get<ResponseApi<Product>>(`/products/${productId}`);
+    return data.data;
+  } catch (error) {
+    throw error;
+  }
+}

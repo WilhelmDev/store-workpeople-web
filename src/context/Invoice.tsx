@@ -2,6 +2,7 @@ import BaseSnackbar from "@/components/snackbar/Base";
 import useFirebase from "@/hooks/useFirebase";
 import { ContextInvoice } from "@/interfaces/invoice";
 import { Product } from "@/interfaces/product";
+import { getProductById } from "@/services/product.service";
 import { doc, getDoc } from "firebase/firestore";
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
 
@@ -15,8 +16,6 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
 
-  const { db } = useFirebase()
-
   const closeModal = () => {
     setShowModalProduct(false);
     setTimeout(() => {
@@ -28,16 +27,9 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     if (loading) return;
     try {
       setLoading(true);
-      const docRef = doc(db, 'products', productId);
-      const product = await getDoc(docRef);
-      if (product.exists()) {
-        const productData = product.data();
-        const element = {...productData, id: product.id };
-        setSelectedProduct(element as Product);
-        setShowModalProduct(true);
-      } else {
-        console.log("Product not found");
-      }
+      const product = await getProductById(productId);
+      setSelectedProduct(product);
+      setShowModalProduct(true);
     } catch (error) {
       console.error("Error getting document: ", error);
     } finally {

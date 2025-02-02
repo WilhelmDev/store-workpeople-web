@@ -1,4 +1,5 @@
 import useInvoice from '@/hooks/useInvoice'
+import { ProductImage } from '@/interfaces/product'
 import { Box, Button, Chip, CircularProgress, Dialog, DialogContent, DialogTitle, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useState } from 'react'
 
@@ -30,6 +31,25 @@ export default function ProductDetail({}: Props) {
     )
   }
 
+  const RenderImage = ({images}: { images: ProductImage[]}) => {
+    const imagesToDisplay = images.length > 0 ? images[0] : null
+    return (
+      <Box
+      component="img"
+      sx={{
+        width: '100%',
+        height: 'auto',
+        objectFit: 'cover',
+        aspectRatio: 1,
+        borderRadius: 2,
+        boxShadow: 3,
+      }}
+      src={imagesToDisplay?.url || '/images/products/s4.jpg'}
+      alt={selectedProduct?.name}
+    />
+    )
+  }
+
   return (
     <Dialog 
       open={showModalProduct} 
@@ -52,19 +72,7 @@ export default function ProductDetail({}: Props) {
         ) : (
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <Box
-                component="img"
-                sx={{
-                  width: '100%',
-                  height: 'auto',
-                  objectFit: 'cover',
-                  aspectRatio: 1,
-                  borderRadius: 2,
-                  boxShadow: 3,
-                }}
-                src={selectedProduct.image}
-                alt={selectedProduct.name}
-              />
+              <RenderImage images={selectedProduct.images} />
             </Grid>
             <Grid item xs={12} md={6}>
               <Box display="flex" flexDirection="column" height="100%" justifyContent="space-between">
@@ -74,7 +82,7 @@ export default function ProductDetail({}: Props) {
                   <Typography variant="h6" gutterBottom>
                     Precio: <span style={{fontWeight: 700}}>{selectedProduct.price}$</span>
                   </Typography>
-                  <Chip label={selectedProduct.category} color="primary" sx={{ mt: 1 }} />
+                  <Chip label={selectedProduct.category.name} color="primary" sx={{ mt: 1 }} />
                 </Box>
                 { !isMobile && (
                   <Box>
