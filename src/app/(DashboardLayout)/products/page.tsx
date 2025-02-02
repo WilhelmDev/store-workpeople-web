@@ -9,31 +9,30 @@ import { Product } from '@/interfaces/product'
 import ProductList from '@/components/list/ProductList'
 import useInvoice from '@/hooks/useInvoice'
 import ProductDetail from '@/components/modal/ProductDetail'
+import { getProducts } from '@/services/product.service'
 
 export default function AllProdutsPage() {
   const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const { db } = useFirebase()
   const { showModalProduct } = useInvoice()
 
+  const fetchProducts = async () => {
+    if (loading) return;
+    try {
+      setLoading(true)
+      const products = await getProducts()
+      setProducts(products)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    const productsCollection = collection(db, 'products')
-    const queryActives = query(productsCollection, where('active', '==', true))
-
-    const unsubscribe = onSnapshot(queryActives, (snapshot) => {
-      const updatedProducts = snapshot.docs.map(doc => ({
-        ...doc.data(),
-        id: doc.id
-      })) as Product[]
-
-      setProducts(updatedProducts)
-      setLoading(false)
-    }, (error) => {
-      console.error("Error fetching products:", error)
-      setLoading(false)
-    })
-    return () => unsubscribe()
-  }, [db])
+    fetchProducts()
+  }, [])
 
   return (
     <PageContainer title='Listado de Productos' description='Aqui puedes ver tus productos'>

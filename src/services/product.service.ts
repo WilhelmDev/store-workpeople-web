@@ -4,7 +4,11 @@ import { Product, ProductPayload } from "@/interfaces/product";
 
 export const createProduct = async (payload: ProductPayload) => {
   try {
-    const { data } = await baseApi.post<ResponseApi<Product>>("/products/create", payload);
+    const {image, ...product} = payload;
+    const { data } = await baseApi.post<ResponseApi<Product>>("/products/create", {
+      ...product,
+      images: [image],
+    });
     return data.data;
   } catch (error) {
     throw error
@@ -14,6 +18,15 @@ export const createProduct = async (payload: ProductPayload) => {
 export const getProducts = async () => {
   try {
     const { data } = await baseApi.get<ResponseApi<Product[]>>("/products/all");
+    return data.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const getProductById = async (productId: string) => {
+  try {
+    const { data } = await baseApi.get<ResponseApi<Product>>(`/products/${productId}`);
     return data.data;
   } catch (error) {
     throw error;

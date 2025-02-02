@@ -1,3 +1,5 @@
+import { Category } from "../category";
+
 export interface ProductPayload {
   name: string;
   price: number;
@@ -10,7 +12,13 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  image: string;
-  category: string;
+  images: ProductImage[];
+  category: Category;
   active: boolean
+}
+
+export interface ProductImage {
+  id: number;
+  url: string;
+  productId: number;
 }
