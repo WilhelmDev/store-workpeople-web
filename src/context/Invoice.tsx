@@ -2,6 +2,7 @@ import BaseSnackbar from "@/components/snackbar/Base";
 import useFirebase from "@/hooks/useFirebase";
 import { ContextInvoice } from "@/interfaces/invoice";
 import { Product } from "@/interfaces/product";
+import { addCartItems } from "@/services/localstorage.service";
 import { getProductById } from "@/services/product.service";
 import { doc, getDoc } from "firebase/firestore";
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
@@ -43,8 +44,11 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     setProducts(prevProducts => {
       //TODO: Check repeated products
       setShowSnackbar(true);
-      return [...prevProducts, product];
+      const products = [...prevProducts, product];
+      addCartItems(products)
+      return products;
     });
+
   }, []);
 
   const updateQuantity = useCallback((productId: string, quantity: number) => {
@@ -61,6 +65,8 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     );
   }, []);
 
+  //  End functions for Products CRUD operations
+
   const memoizedValues = useMemo(() => {
     return {
       showModalProduct,
@@ -74,7 +80,6 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       products,
     }
   }, [showModalProduct, selectedProduct, getProduct, loading, addProduct, removeProduct, updateQuantity, products])
-  //  End functions for Products CRUD operations
 
   return (
     <InvoiceContext.Provider value={memoizedValues}>
