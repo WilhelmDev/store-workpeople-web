@@ -1,35 +1,64 @@
 import useInvoice from '@/hooks/useInvoice'
 import { ProductImage } from '@/interfaces/product'
-import { Box, Button, Chip, CircularProgress, Dialog, DialogContent, DialogTitle, Grid, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { Box, Button, Chip, CircularProgress, Dialog, DialogContent, DialogTitle, Grid, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { useState } from 'react'
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 type Props = {
   // You can add props here if needed in the future
 }
 
+
 export default function ProductDetail({}: Props) {
   const { selectedProduct, closeModal, showModalProduct, addProduct } = useInvoice()
-  const [ showSnackbar, setShowSnackbar] = useState(false)
+  const [quantity, setQuantity] = useState(1)
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const addToinvoice = () => {
     if (selectedProduct) {
-      addProduct(selectedProduct)
+      addProduct({product: selectedProduct, quantity })
       closeModal()
     }
   }
 
-  const AddinvoiceBtn = () => {
+  const QuantitySelector = ({ quantity, setQuantity }: { quantity: number, setQuantity: (quantity: number) => void }) => {
+    const handleIncrease = () => setQuantity(quantity + 1);
+    const handleDecrease = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
+
     return (
-      <Grid item xs={12} md={12}>
-        <Button variant="contained" fullWidth color="primary" onClick={addToinvoice}>
-          Añadir a factura
-        </Button>
-      </Grid>
-    )
-  }
+      <Box display="flex" alignItems="center" justifyContent="center">
+        <IconButton onClick={handleDecrease} size="small">
+          <RemoveIcon />
+        </IconButton>
+        <Typography variant="h6" component="span" sx={{ mx: 2, minWidth: '40px', textAlign: 'center' }}>
+          {quantity}
+        </Typography>
+        <IconButton onClick={handleIncrease} size="small">
+          <AddIcon />
+        </IconButton>
+      </Box>
+    );
+  };
+
+    const AddinvoiceBtn = () => {
+      return (
+        <Grid item xs={12} md={12}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12}>
+              <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
+            </Grid>
+            <Grid item xs={12}>
+              <Button variant="contained" fullWidth color="primary" onClick={addToinvoice}>
+                Añadir a factura
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      )
+    }
 
   const RenderImage = ({images}: { images: ProductImage[]}) => {
     const imagesToDisplay = images.length > 0 ? images[0] : null

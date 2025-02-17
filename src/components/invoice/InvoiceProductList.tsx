@@ -1,10 +1,10 @@
 import React from 'react'
 import { Box, Typography } from '@mui/material'
-import { Product } from '@/interfaces/product'
+import { InvoiceItem, Product } from '@/interfaces/product'
 import InvoiceProductItem from './InvoiceProductItem'
 
 interface InvoiceProductListProps {
-  products: Product[]
+  products: InvoiceItem[]
 }
 
 const InvoiceProductList: React.FC<InvoiceProductListProps> = ({ products }) => {
@@ -19,7 +19,7 @@ const InvoiceProductList: React.FC<InvoiceProductListProps> = ({ products }) => 
   return (
     <Box>
       {products.map((product) => (
-        <InvoiceProductItem key={product.id} product={product} />
+        <InvoiceProductItem key={product.product.id} item={product} />
       ))}
     </Box>
   )
