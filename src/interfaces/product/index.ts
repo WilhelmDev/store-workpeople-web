@@ -17,6 +17,11 @@ export interface Product {
   active: boolean
 }
 
+export interface InvoiceItem {
+  product: Product;
+  quantity: number;
+}
+
 export interface ProductImage {
   id: number;
   url: string;

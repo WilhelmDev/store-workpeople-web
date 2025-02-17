@@ -1,9 +1,8 @@
 import BaseSnackbar from "@/components/snackbar/Base";
-import useFirebase from "@/hooks/useFirebase";
 import { ContextInvoice } from "@/interfaces/invoice";
-import { Product } from "@/interfaces/product";
+import { InvoiceItem, Product } from "@/interfaces/product";
+import { addCartItems } from "@/services/localstorage.service";
 import { getProductById } from "@/services/product.service";
-import { doc, getDoc } from "firebase/firestore";
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
 
 const InvoiceContext = createContext<Partial<ContextInvoice>>({})
@@ -12,7 +11,7 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(false)
   const [selectedProduct, setSelectedProduct] = useState<null | Product>(null)
   const [showModalProduct, setShowModalProduct] = useState<boolean>(false)
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<InvoiceItem[]>([])
 
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
 
@@ -39,27 +38,32 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   }, []);
 
   // Begin functions for Products CRUD operations
-  const addProduct = useCallback((product: Product) => {
+  const addProduct = useCallback((item: InvoiceItem) => {
     setProducts(prevProducts => {
       //TODO: Check repeated products
       setShowSnackbar(true);
-      return [...prevProducts, product];
+      const products = [...prevProducts, item];
+      addCartItems(products)
+      return products;
     });
+
   }, []);
 
   const updateQuantity = useCallback((productId: string, quantity: number) => {
     setProducts(prevProducts => 
-      prevProducts.map(product => 
-        product.id === productId ? {...product, quantity} : product
+      prevProducts.map(item => 
+        item.product.id === productId ? { product: item.product, quantity} : item
       )
     );
   }, []);
 
   const removeProduct = useCallback((productId: string) => {
     setProducts(prevProducts => 
-      prevProducts.filter(product => product.id !== productId)
+      prevProducts.filter(item => item.product.id !== productId)
     );
   }, []);
+
+  //  End functions for Products CRUD operations
 
   const memoizedValues = useMemo(() => {
     return {
@@ -74,7 +78,6 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       products,
     }
   }, [showModalProduct, selectedProduct, getProduct, loading, addProduct, removeProduct, updateQuantity, products])
-  //  End functions for Products CRUD operations
 
   return (
     <InvoiceContext.Provider value={memoizedValues}>
