@@ -1,6 +1,8 @@
 import BaseSnackbar from "@/components/snackbar/Base";
+import { Cart } from "@/interfaces/cart";
 import { ContextInvoice } from "@/interfaces/invoice";
 import { InvoiceItem, Product } from "@/interfaces/product";
+import { addToCart, getCartUser } from "@/services/cart.service";
 import { addCartItems } from "@/services/localstorage.service";
 import { getProductById } from "@/services/product.service";
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
@@ -12,6 +14,7 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [selectedProduct, setSelectedProduct] = useState<null | Product>(null)
   const [showModalProduct, setShowModalProduct] = useState<boolean>(false)
   const [products, setProducts] = useState<InvoiceItem[]>([])
+  const [cart, setCart] = useState<Cart| null>(null)
 
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
 
@@ -38,15 +41,9 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   }, []);
 
   // Begin functions for Products CRUD operations
-  const addProduct = useCallback((item: InvoiceItem) => {
-    setProducts(prevProducts => {
-      //TODO: Check repeated products
-      setShowSnackbar(true);
-      const products = [...prevProducts, item];
-      addCartItems(products)
-      return products;
-    });
-
+  const addProduct = useCallback(async (item: InvoiceItem) => {
+    const updatedCart = await addToCart(parseInt(item.product.id), item.quantity);
+    setCart(updatedCart);
   }, []);
 
   const updateQuantity = useCallback((productId: string, quantity: number) => {
@@ -63,6 +60,19 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     );
   }, []);
 
+  const getCart = useCallback(async() => {
+    try {
+      const data = await getCartUser();
+      setCart(data);
+      setShowModalProduct(true);
+      setTimeout(() => {
+        setShowModalProduct(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error getting cart: ", error);
+    }
+  }, []);
+
   //  End functions for Products CRUD operations
 
   const memoizedValues = useMemo(() => {
@@ -76,8 +86,10 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       updateQuantity,
       removeProduct,
       products,
+      cart,
+      getCart,
     }
-  }, [showModalProduct, selectedProduct, getProduct, loading, addProduct, removeProduct, updateQuantity, products])
+  }, [showModalProduct, selectedProduct, getProduct, loading, addProduct, removeProduct, updateQuantity, products, cart, getCart])
 
   return (
     <InvoiceContext.Provider value={memoizedValues}>

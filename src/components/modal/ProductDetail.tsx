@@ -17,7 +17,7 @@ export default function ProductDetail({}: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const addToinvoice = () => {
+  const addToCart = () => {
     if (selectedProduct) {
       addProduct({product: selectedProduct, quantity })
       closeModal()
@@ -51,7 +51,7 @@ export default function ProductDetail({}: Props) {
               <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" fullWidth color="primary" onClick={addToinvoice}>
+              <Button variant="contained" fullWidth color="primary" onClick={addToCart}>
                 Añadir a factura
               </Button>
             </Grid>
