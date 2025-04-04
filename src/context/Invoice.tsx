@@ -43,7 +43,11 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   // Begin functions for Products CRUD operations
   const addProduct = useCallback(async (item: InvoiceItem) => {
     const updatedCart = await addToCart(parseInt(item.product.id), item.quantity);
+
     setCart(updatedCart);
+
+    setShowSnackbar(true)
+
   }, []);
 
   const updateQuantity = useCallback((productId: string, quantity: number) => {
@@ -64,10 +68,6 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     try {
       const data = await getCartUser();
       setCart(data);
-      setShowModalProduct(true);
-      setTimeout(() => {
-        setShowModalProduct(false);
-      }, 3000);
     } catch (error) {
       console.error("Error getting cart: ", error);
     }
@@ -75,7 +75,7 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
 
   //  End functions for Products CRUD operations
 
-  const memoizedValues = useMemo(() => {
+  const memoizedValues:ContextInvoice = useMemo(() => {
     return {
       showModalProduct,
       selectedProduct,

@@ -2,13 +2,14 @@ import React from 'react'
 import { Box, Typography } from '@mui/material'
 import { InvoiceItem, Product } from '@/interfaces/product'
 import InvoiceProductItem from './InvoiceProductItem'
+import { Cart, CartItem } from '@/interfaces/cart'
 
 interface InvoiceProductListProps {
-  products: InvoiceItem[]
+  cartItems: CartItem[]
 }
 
-const InvoiceProductList: React.FC<InvoiceProductListProps> = ({ products }) => {
-  if (products.length === 0) {
+const InvoiceProductList: React.FC<InvoiceProductListProps> = ({ cartItems }) => {
+  if (cartItems.length === 0) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="200px">
         <Typography variant="h6">No hay productos en la factura</Typography>
@@ -18,7 +19,7 @@ const InvoiceProductList: React.FC<InvoiceProductListProps> = ({ products }) => 
 
   return (
     <Box>
-      {products.map((product) => (
+      {cartItems.map((product) => (
         <InvoiceProductItem key={product.product.id} item={product} />
       ))}
     </Box>
