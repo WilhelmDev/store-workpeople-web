@@ -1,6 +1,8 @@
 import BaseSnackbar from "@/components/snackbar/Base";
+import { Cart } from "@/interfaces/cart";
 import { ContextInvoice } from "@/interfaces/invoice";
 import { InvoiceItem, Product } from "@/interfaces/product";
+import { addToCart, getCartUser, removeFromCart } from "@/services/cart.service";
 import { addCartItems } from "@/services/localstorage.service";
 import { getProductById } from "@/services/product.service";
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from "react";
@@ -12,8 +14,10 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [selectedProduct, setSelectedProduct] = useState<null | Product>(null)
   const [showModalProduct, setShowModalProduct] = useState<boolean>(false)
   const [products, setProducts] = useState<InvoiceItem[]>([])
-
+  const [cart, setCart] = useState<Cart| null>(null)
+  
   const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("")
 
   const closeModal = () => {
     setShowModalProduct(false);
@@ -38,14 +42,13 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   }, []);
 
   // Begin functions for Products CRUD operations
-  const addProduct = useCallback((item: InvoiceItem) => {
-    setProducts(prevProducts => {
-      //TODO: Check repeated products
-      setShowSnackbar(true);
-      const products = [...prevProducts, item];
-      addCartItems(products)
-      return products;
-    });
+  const addProduct = useCallback(async (item: InvoiceItem) => {
+    const updatedCart = await addToCart(parseInt(item.product.id), item.quantity);
+
+    setCart(updatedCart);
+
+    setSnackbarMessage("Producto añadido a la factura!");
+    setShowSnackbar(true)
 
   }, []);
 
@@ -57,15 +60,28 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     );
   }, []);
 
-  const removeProduct = useCallback((productId: string) => {
-    setProducts(prevProducts => 
-      prevProducts.filter(item => item.product.id !== productId)
-    );
+  const removeProduct = useCallback(async(productId: string) => {
+    try {
+      await removeFromCart(parseInt(productId));
+      const data = await getCartUser();
+      setCart(data);
+    } catch (error) {
+      console.error("Error removing product: ", error);
+    } 
+  }, []);
+
+  const getCart = useCallback(async() => {
+    try {
+      const data = await getCartUser();
+      setCart(data);
+    } catch (error) {
+      console.error("Error getting cart: ", error);
+    }
   }, []);
 
   //  End functions for Products CRUD operations
 
-  const memoizedValues = useMemo(() => {
+  const memoizedValues:ContextInvoice = useMemo(() => {
     return {
       showModalProduct,
       selectedProduct,
@@ -76,13 +92,15 @@ const InvoiceProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       updateQuantity,
       removeProduct,
       products,
+      cart,
+      getCart,
     }
-  }, [showModalProduct, selectedProduct, getProduct, loading, addProduct, removeProduct, updateQuantity, products])
+  }, [showModalProduct, selectedProduct, getProduct, loading, addProduct, removeProduct, updateQuantity, products, cart, getCart])
 
   return (
     <InvoiceContext.Provider value={memoizedValues}>
       {children}
-      <BaseSnackbar isOpen={showSnackbar} handleClose={() => setShowSnackbar(false)} />
+      <BaseSnackbar isOpen={showSnackbar} handleClose={() => setShowSnackbar(false)} text={snackbarMessage} />
     </InvoiceContext.Provider>
   )
 }

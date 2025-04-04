@@ -1,3 +1,4 @@
+import { Cart } from "../cart";
 import { InvoiceItem, Product } from "../product";
 
 export interface ContextInvoice {
@@ -9,5 +10,7 @@ export interface ContextInvoice {
   addProduct: (product: InvoiceItem) => void,
   updateQuantity: (productId: string, quantity: number) => void,
   removeProduct: (productId: string) => void,
-  products: InvoiceItem[]
+  products: InvoiceItem[],
+  getCart: () => Promise<void>,
+  cart: Cart | null
 }

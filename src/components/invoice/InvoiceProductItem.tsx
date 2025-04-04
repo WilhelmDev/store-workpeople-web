@@ -1,11 +1,11 @@
 import React from 'react'
-import { Box, Typography, IconButton } from '@mui/material'
-import { InvoiceItem, Product } from '@/interfaces/product'
+import { Box, Typography, IconButton, Avatar } from '@mui/material'
+import { CartItem } from '@/interfaces/cart'
 import { IconTrash } from '@tabler/icons-react'
 import useInvoice from '@/hooks/useInvoice'
 
 interface InvoiceProductItemProps {
-  item: InvoiceItem
+  item: CartItem
 }
 
 const InvoiceProductItem: React.FC<InvoiceProductItemProps> = ({ item }) => {
@@ -16,11 +16,19 @@ const InvoiceProductItem: React.FC<InvoiceProductItemProps> = ({ item }) => {
 
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} p={2} border="1px solid #e0e0e0" borderRadius={2}>
-      <Box>
-        <Typography variant="subtitle1">{product.name}</Typography>
-        <Typography variant="body2" color="textSecondary">
-          Subtotal: ${ totalPrice() } | Cantidad: {quantity}
-        </Typography>
+      <Box display="flex" alignItems="center">
+        <Avatar
+          src={product.images[0]?.url || '/images/products/s4.jpg'}
+          alt={product.name}
+          sx={{ width: 60, height: 60, marginRight: 2 }}
+          variant="rounded"
+        />
+        <Box>
+          <Typography variant="subtitle1">{product.name}</Typography>
+          <Typography variant="body2" color="textSecondary">
+            Subtotal: ${ totalPrice() } | Cantidad: {quantity}
+          </Typography>
+        </Box>
       </Box>
       <IconButton onClick={() => removeProduct(product.id)} color="error">
         <IconTrash size={20} />
