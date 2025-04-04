@@ -19,3 +19,12 @@ export const addToCart = async (productId: number, quantity: number) => {
     throw error
   }
 }
+
+export const removeFromCart = async (cartItemId: number) => {
+  try {
+    const { data } = await baseApi.delete<ResponseApi<Cart>>(`/cart/remove/${cartItemId}`);
+    return data.data;
+  } catch (error) {
+    throw error;
+  }
+}
